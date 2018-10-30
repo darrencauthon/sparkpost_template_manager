@@ -27,6 +27,8 @@ namespace SparkPostTemplateManager
                     Published = response.Published,
                 };
 
+                template.Content.Html = "new content";
+
                 await client.TemplatesWithUpdate.Update(template);
 
             }).Wait();
@@ -74,26 +76,22 @@ namespace SparkPostTemplateManager
             this.dataMapper = dataMapper;
         }
 
-        public async Task<CreateTemplateResponse> Update(Template template)
+        public async Task<Response> Update(Template template)
         {
+            var dictionary = dataMapper.ToDictionary(template);
+            dictionary.Remove("id");
+
             var request = new Request
             {
                 Url = $"api/{client.Version}/templates/{template.Id}",
                 Method = "PUT",
-                Data = dataMapper.ToDictionary(template)
+                Data = dictionary
             };
 
             var response = await requestSender.Send(request);
             if (response.StatusCode != HttpStatusCode.OK) throw new ResponseException(response);
 
-            var results = JsonConvert.DeserializeObject<dynamic>(response.Content).results;
-            return new CreateTemplateResponse()
-            {
-                Id = results.id,
-                ReasonPhrase = response.ReasonPhrase,
-                StatusCode = response.StatusCode,
-                Content = response.Content
-            };
+            return response;
         }
     }
 }
