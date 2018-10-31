@@ -16,22 +16,7 @@ namespace SparkPostTemplateManager
             {
                 var client = new OurSpecialClient("dae299aeece1f1ddc881a20786b76137b2187aa4");
 
-                var response = await client.TemplatesWithUpdate.Retrieve("overwrite-this");
-
-                var template = new Template
-                {
-                    Content = response.TemplateContent,
-                    Description = response.Description,
-                    Id = response.Id,
-                    Name = response.Name,
-                    Options = response.Options,
-                    Published = response.Published,
-                };
-
-                template.Content.Html = "new content";
-
-                await client.TemplatesWithUpdate.Update(template);
-
+                await client.TemplatesWithUpdate.Update("overwrite-this", new {Content = new {Html = "new content"}});
             }).Wait();
         }
     }
@@ -79,13 +64,13 @@ namespace SparkPostTemplateManager
 
         public async Task<Response> Update(Template template)
         {
-            var dictionary = dataMapper.ToDictionary(template);
-
-            return await Update(template.Id, dictionary);
+            return await Update(template.Id, template);
         }
 
-        public async Task<Response> Update(string templateId, IDictionary<string, object> dictionary)
+        public async Task<Response> Update(string templateId, object data)
         {
+            var dictionary = dataMapper.CatchAll(data);
+
             var request = new Request
             {
                 Url = $"api/{client.Version}/templates/{templateId}",
