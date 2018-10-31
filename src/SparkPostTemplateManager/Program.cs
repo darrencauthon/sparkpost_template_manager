@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -79,11 +80,15 @@ namespace SparkPostTemplateManager
         public async Task<Response> Update(Template template)
         {
             var dictionary = dataMapper.ToDictionary(template);
-            dictionary.Remove("id");
 
+            return await Update(template.Id, dictionary);
+        }
+
+        public async Task<Response> Update(string templateId, IDictionary<string, object> dictionary)
+        {
             var request = new Request
             {
-                Url = $"api/{client.Version}/templates/{template.Id}",
+                Url = $"api/{client.Version}/templates/{templateId}",
                 Method = "PUT",
                 Data = dictionary
             };
