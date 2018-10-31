@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -16,21 +17,9 @@ namespace SparkPostTemplateManager
                 var client = new OurSpecialClient("dae299aeece1f1ddc881a20786b76137b2187aa4");
 
                 var response = await client.TemplatesWithUpdate.Retrieve("overwrite-this");
+                response.TemplateContent.Html = "new content 2234";
 
-                var template = new Template
-                {
-                    Content = response.TemplateContent,
-                    Description = response.Description,
-                    Id = response.Id,
-                    Name = response.Name,
-                    Options = response.Options,
-                    Published = response.Published,
-                };
-
-                template.Content.Html = "new content";
-
-                await client.TemplatesWithUpdate.Update(template);
-
+                await client.TemplatesWithUpdate.Update("overwrite-this", new {Content = response.TemplateContent});
             }).Wait();
         }
     }
@@ -78,12 +67,16 @@ namespace SparkPostTemplateManager
 
         public async Task<Response> Update(Template template)
         {
-            var dictionary = dataMapper.ToDictionary(template);
-            dictionary.Remove("id");
+            return await Update(template.Id, template);
+        }
+
+        public async Task<Response> Update(string templateId, object data)
+        {
+            var dictionary = dataMapper.CatchAll(data);
 
             var request = new Request
             {
-                Url = $"api/{client.Version}/templates/{template.Id}",
+                Url = $"api/{client.Version}/templates/{templateId}",
                 Method = "PUT",
                 Data = dictionary
             };
