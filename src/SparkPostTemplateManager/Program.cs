@@ -16,7 +16,10 @@ namespace SparkPostTemplateManager
             {
                 var client = new OurSpecialClient("dae299aeece1f1ddc881a20786b76137b2187aa4");
 
-                await client.TemplatesWithUpdate.Update("overwrite-this", new {Content = new {Html = "new content"}});
+                var response = await client.TemplatesWithUpdate.Retrieve("overwrite-this");
+                response.TemplateContent.Html = "new content 2234";
+
+                await client.TemplatesWithUpdate.Update("overwrite-this", new {Content = response.TemplateContent});
             }).Wait();
         }
     }
