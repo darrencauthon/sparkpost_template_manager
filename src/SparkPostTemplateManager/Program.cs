@@ -33,7 +33,10 @@ namespace SparkPostTemplateManager
 
             Task.Run(async () =>
             {
-                await PushThisTemplateHtmlToSparkPost("overwrite-this", "new content 2234");
+                var templateId = args[0].Split('.')[0];
+                var html = System.IO.File.ReadAllText(args[0]);
+
+                await PushThisTemplateHtmlToSparkPost(templateId, html);
             }).Wait();
         }
 
