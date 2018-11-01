@@ -25,6 +25,12 @@ namespace SparkPostTemplateManager
                 return;
             }
 
+            if (args[0].EndsWith(".html") == false)
+            {
+                Console.Write($"{args[0]} is not a html file");
+                return;
+            }
+
             Task.Run(async () =>
             {
                 await PushThisTemplateHtmlToSparkPost("overwrite-this", "new content 2234");
