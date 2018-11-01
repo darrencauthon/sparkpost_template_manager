@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,6 +13,18 @@ namespace SparkPostTemplateManager
     {
         public static void Main(string[] args)
         {
+            if (args.Any() == false)
+            {
+                Console.Write("no arguments");
+                return;
+            }
+
+            if (System.IO.File.Exists(args[0]) == false)
+            {
+                Console.Write($"{args[0]} does not exist");
+                return;
+            }
+
             Task.Run(async () =>
             {
                 await PushThisTemplateHtmlToSparkPost("overwrite-this", "new content 2234");
