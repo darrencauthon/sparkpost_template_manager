@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,15 +13,41 @@ namespace SparkPostTemplateManager
     {
         public static void Main(string[] args)
         {
+            if (args.Any() == false)
+            {
+                Console.Write("no arguments");
+                return;
+            }
+
+            if (System.IO.File.Exists(args[0]) == false)
+            {
+                Console.Write($"{args[0]} does not exist");
+                return;
+            }
+
+            if (args[0].EndsWith(".html") == false)
+            {
+                Console.Write($"{args[0]} is not a html file");
+                return;
+            }
+
             Task.Run(async () =>
             {
-                var client = new OurSpecialClient("dae299aeece1f1ddc881a20786b76137b2187aa4");
+                var templateId = args[0].Split('.')[0];
+                var html = System.IO.File.ReadAllText(args[0]);
 
-                var response = await client.TemplatesWithUpdate.Retrieve("overwrite-this");
-                response.TemplateContent.Html = "new content 2234";
-
-                await client.TemplatesWithUpdate.Update("overwrite-this", new {Content = response.TemplateContent});
+                await PushThisTemplateHtmlToSparkPost(templateId, html);
             }).Wait();
+        }
+
+        private static async Task PushThisTemplateHtmlToSparkPost(string templateId, string html)
+        {
+            var client = new OurSpecialClient("dae299aeece1f1ddc881a20786b76137b2187aa4");
+
+            var response = await client.TemplatesWithUpdate.Retrieve(templateId);
+            response.TemplateContent.Html = html;
+
+            await client.TemplatesWithUpdate.Update(templateId, new {Content = response.TemplateContent});
         }
     }
 
