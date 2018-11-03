@@ -20,7 +20,7 @@ namespace SparkPostTemplateManager
             }
 
             var apiKey = args.FirstOrDefault(x => x.StartsWith("--api-key="))?.Split('=')[1];
-            if (string.IsNullOrEmpty(apiKey))
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
                 Console.Write($"An API Key is required");
                 return;
