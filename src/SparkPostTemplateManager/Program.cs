@@ -13,13 +13,13 @@ namespace SparkPostTemplateManager
     {
         public static void Main(string[] args)
         {
-            var apiKey = "dae299aeece1f1ddc881a20786b76137b2187aa4";
-
             if (args.Any() == false)
             {
                 Console.Write("no arguments");
                 return;
             }
+
+            var apiKey = args.FirstOrDefault(x => x.StartsWith("--api-key="))?.Split('=')[1];
 
             if (System.IO.File.Exists(args[0]) == false)
             {
