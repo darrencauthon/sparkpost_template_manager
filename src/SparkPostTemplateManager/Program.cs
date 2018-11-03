@@ -19,6 +19,13 @@ namespace SparkPostTemplateManager
                 return;
             }
 
+            var apiKey = args.FirstOrDefault(x => x.StartsWith("--api-key="))?.Split('=')[1];
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                Console.Write($"An API Key is required");
+                return;
+            }
+
             if (System.IO.File.Exists(args[0]) == false)
             {
                 Console.Write($"{args[0]} does not exist");
@@ -36,13 +43,13 @@ namespace SparkPostTemplateManager
                 var templateId = args[0].Split('.')[0];
                 var html = System.IO.File.ReadAllText(args[0]);
 
-                await PushThisTemplateHtmlToSparkPost(templateId, html);
+                await PushThisTemplateHtmlToSparkPost(apiKey, templateId, html);
             }).Wait();
         }
 
-        private static async Task PushThisTemplateHtmlToSparkPost(string templateId, string html)
+        private static async Task PushThisTemplateHtmlToSparkPost(string apiKey, string templateId, string html)
         {
-            var client = new OurSpecialClient("dae299aeece1f1ddc881a20786b76137b2187aa4");
+            var client = new OurSpecialClient(apiKey);
 
             var response = await client.TemplatesWithUpdate.Retrieve(templateId);
             response.TemplateContent.Html = html;
